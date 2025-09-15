@@ -44,6 +44,12 @@ class Connection {
     }
 
     private handleData(data: Buffer) {
+        // Skip version checks for RELAY stage - at this point we're just relaying traffic
+        if (this.stage === CONNECTION_STAGES.RELAY) {
+            // Data is being relayed; no version checking needed
+            return;
+        }
+
         // Different stages expect different version bytes
         if (this.stage === CONNECTION_STAGES.AUTHENTICATION) {
             // Authentication uses version 0x01
@@ -72,9 +78,6 @@ class Connection {
                 break;
             case CONNECTION_STAGES.REQUEST:
                 this.handleRequest(data);
-                break;
-            case CONNECTION_STAGES.RELAY:
-                // Data is being relayed; no action needed here
                 break;
             default:
                 console.error('Invalid connection stage');
