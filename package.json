@@ -17,7 +17,7 @@
   "scripts": {
     "dev": "ts-node src/index.ts",
     "build": "tsc",
-    "run": "npm build && node dist/index.js"
+    "start": "npm run build && node dist/index.js"
   },
   "devDependencies": {
     "@types/node": "^24.4.0",
