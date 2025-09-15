@@ -298,7 +298,7 @@ describe('Connection Class', () => {
       
       mockSocket.emit('end');
       
-      expect(endSpy).toHaveBeenCalledWith('Connection ended by client');
+      expect(endSpy).toHaveBeenCalledWith('[CONNECTION] Connection ended by client unknown:0');
       endSpy.mockRestore();
     });
   });
