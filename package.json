@@ -1,0 +1,27 @@
+{
+  "name": "socks5-proxy-server",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/devinda0/SOCKS5-proxy-server#readme",
+  "bugs": {
+    "url": "https://github.com/devinda0/SOCKS5-proxy-server/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devinda0/SOCKS5-proxy-server.git"
+  },
+  "license": "ISC",
+  "author": "",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "dev": "ts-node src/index.ts",
+    "build": "tsc",
+    "run": "npm build && node dist/index.js"
+  },
+  "devDependencies": {
+    "@types/node": "^24.4.0",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}
