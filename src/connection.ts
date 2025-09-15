@@ -39,12 +39,24 @@ class Connection {
 
     private handleData(data: Buffer) {
         console.log('Data received:', data);
-        const version = data[0];
-
-        if (version !== SOCKS_VERSION) {
-            console.error(`Unsupported SOCKS version: ${version}`);
-            this.socket.destroy();
-            return;
+        
+        // Different stages expect different version bytes
+        if (this.stage === CONNECTION_STAGES.AUTHENTICATION) {
+            // Authentication uses version 0x01
+            const authVersion = data[0];
+            if (authVersion !== 0x01) {
+                console.error(`Unsupported auth version: ${authVersion}`);
+                this.socket.destroy();
+                return;
+            }
+        } else {
+            // Other stages use SOCKS version 0x05
+            const version = data[0];
+            if (version !== SOCKS_VERSION) {
+                console.error(`Unsupported SOCKS version: ${version}`);
+                this.socket.destroy();
+                return;
+            }
         }
             
         switch (this.stage) {

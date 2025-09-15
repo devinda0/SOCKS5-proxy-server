@@ -10,7 +10,7 @@
     "module": "commonjs",
     "target": "esnext",
     "outDir": "dist/",
-    "types": ["node"],
+    "types": ["node", "jest"],
     // For nodejs:
     // "lib": ["esnext"],
     // "types": ["node"],
