@@ -5,8 +5,15 @@ import { authenticate } from './auth';
 class Connection {
     private stage = CONNECTION_STAGES.GREETING;
     private targetSocket: Socket | null = null;
+    private sourceIP: string;
+    private sourcePort: number;
 
     constructor(private socket: Socket) {
+        this.sourceIP = socket.remoteAddress || 'unknown';
+        this.sourcePort = socket.remotePort || 0;
+        
+        console.log(`[CONNECTION] New SOCKS5 connection from ${this.sourceIP}:${this.sourcePort}`);
+        
         this.socket.on('data', (data) => this.handleData(data));
         this.socket.on('error', (err) => this.handleError(err));
         this.socket.on('close', () => this.handleClose());
@@ -38,8 +45,6 @@ class Connection {
     }
 
     private handleData(data: Buffer) {
-        console.log('Data received:', data);
-        
         // Different stages expect different version bytes
         if (this.stage === CONNECTION_STAGES.AUTHENTICATION) {
             // Authentication uses version 0x01
@@ -148,9 +153,11 @@ class Connection {
             return;
         }
 
+        console.log(`[CONNECTION] CONNECT request from ${this.sourceIP}:${this.sourcePort} to ${host}:${port}`);
+
         this.targetSocket = new Socket();
         this.targetSocket.connect(port, host, () => {
-            console.log(`Connected to target ${host}:${port}`);
+            console.log(`[CONNECTION] Successfully established tunnel: ${this.sourceIP}:${this.sourcePort} -> ${host}:${port}`);
             this.sendReply(REPLIES.SUCCEEDED);
             this.stage = CONNECTION_STAGES.RELAY;
             this.socket.pipe(this.targetSocket!);
@@ -158,32 +165,32 @@ class Connection {
         });
 
         this.targetSocket.on('error', (err) => {
-            console.error(`Target connection error: ${err.message}`);
+            console.error(`[CONNECTION] Target connection failed for ${this.sourceIP}:${this.sourcePort} -> ${host}:${port} - Error: ${err.message}`);
             this.sendReply(REPLIES.HOST_UNREACHABLE);
             this.socket.end();
         });
 
         this.targetSocket.on('close', () => {
-            console.log('Target connection closed');
+            console.log(`[CONNECTION] Target connection closed for ${this.sourceIP}:${this.sourcePort}`);
             this.sendReply(REPLIES.GENERAL_FAILURE);
             this.socket.end();
         }); 
     }
 
     private handleError(err: Error) {
-        console.error(`Connection error: ${err.message}`);
+        console.error(`[CONNECTION] Connection error for ${this.sourceIP}:${this.sourcePort} - ${err.message}`);
         this.handleClose();
     }
 
     private handleClose() {
-        console.log('Connection closed');
+        console.log(`[CONNECTION] Connection closed for ${this.sourceIP}:${this.sourcePort}`);
         if (this.targetSocket) {
             this.targetSocket.destroy();
         }
     }
 
     private handleEnd() {
-        console.log('Connection ended by client');
+        console.log(`[CONNECTION] Connection ended by client ${this.sourceIP}:${this.sourcePort}`);
         this.handleClose();
     }
 }
