@@ -1,13 +1,9 @@
 import { createServer } from 'net';
+import Connection from './connection';
 
 export default createServer((socket) => {
-  console.log('Client connected');
-
-  socket.on('data', (data) => {
-    console.log('Received data:', data.toString());
-  });
-
-  socket.on('end', () => {
-    console.log('Client disconnected');
-  });
+    console.log('New client connected');
+    console.log(socket.remoteAddress, socket.remotePort);
+    new Connection(socket);
+    console.log('Connection instance created');
 });
