@@ -1,17 +1,6 @@
-import { createServer } from 'node:net';
+import server from './server';
+import { PROXY_PORT } from './config';
 
-const server = createServer((socket) => {
-  console.log('Client connected');
-
-  socket.on('data', (data) => {
-    console.log('Received data:', data.toString());
-  });
-
-  socket.on('end', () => {
-    console.log('Client disconnected');
-  });
-});
-
-server.listen(3000, () => {
-  console.log('Server listening on port 3000');
+server.listen(PROXY_PORT, () => {
+  console.log(`Server listening on port ${PROXY_PORT}`);
 });
