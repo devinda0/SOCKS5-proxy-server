@@ -21,11 +21,10 @@ class Connection {
     }
 
     private sendReply(reply: REPLIES) {
-        const {
-            address,
-            port
-        } = (this.socket.address() as AddressInfo) || { address: '0.0.0.0', port: 0 };
-        const ipBytes = address.split('.').map(octet => parseInt(octet, 10));
+        const { address, port } = (this.socket.address() as AddressInfo) || { address: '0.0.0.0', port: 0 };
+        // Ensure address is a valid IPv4 string
+        let ipString = typeof address === 'string' && address.includes('.') ? address : '0.0.0.0';
+        const ipBytes = ipString.split('.').map(octet => parseInt(octet, 10));
 
         const response = Buffer.from([
             SOCKS_VERSION,
